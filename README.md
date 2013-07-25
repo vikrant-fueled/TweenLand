@@ -1,6 +1,5 @@
 TweenLand Challenge
-
--------------------
+=================
 
 The Problem:
 	
