@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <script language="javascript" type="text/javascript"  src="jquery-2.0.3.js"></script>
+        <script language="javascript" type="text/javascript" src="arbor/arbor.js" ></script>
+        <script language="javascript" type="text/javascript" src="arbor/graphics.js" ></script>
+        <script language="javascript" type="text/javascript" src="arbor/renderer.js" ></script>
+    </head>
+    <body>
+      <canvas id="viewport" width="1200" height="1200"></canvas>
+      <script language="javascript" type="text/javascript">
+          var sys = arbor.ParticleSystem(0, 400, 1);
+          sys.parameters({gravity:true});
+          sys.renderer = Renderer("#viewport");
+          var animals = sys.addNode('1', {'label':'1'});
+          var animals = sys.addNode('2', {'label':'2'});
+          sys.addEdge(1, 2);
+      </script>
+    </body>
+</html>

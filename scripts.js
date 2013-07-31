@@ -16,8 +16,8 @@ function _initialize(){
 	var _Integers = new Array();
 	_Integers = integerArray(_TweenARRAY.length);
 
-	// var _Relations = new Array();
-	//_Relations = _CompareALL(_TweenARRAY);
+	var _Relations = new Array();
+	_Relations = _CompareALL(_TweenARRAY);
 
 	// console.log(_Relations);
 
@@ -50,7 +50,7 @@ function _CompareALL(_ARRAY)
 		var _PartA = new Array();
 		_PartA = _ARRAY[i];
 		_KEYS = new Array();
-		for(var j=i+1; j<_ARRAY.length; j++)
+		for(var j=0; j<_ARRAY.length; j++)
 		{
 			var _PartB = new Array();
 			_PartB = _ARRAY[j];
@@ -72,14 +72,59 @@ function _CompareALL(_ARRAY)
 }
 
 function _CreateGRAPH(_ARRAY){
-	var _CANVAS = $('#output')[0];
+
+  var sys = arbor.ParticleSystem(800, 0, 1, false, 60, 2, 0);
+  sys.stop();
+  sys.renderer = Renderer("#graph-output");
 
 
-	// Initaliase a 2-dimensional drawing context
-	var ctx = _CANVAS.getContext('2d');
-	var r = 20;
-	var i = 2;
-	ctx.beginPath();
-	ctx.arc((i*r)+5,(j*r+5),r,0,2*Math.PI);
-	ctx.stroke();
+  // var data = {
+	 //  	nodes:{
+	 //  		node1:{'label':'1'},
+	 //  		node2:{'label':'2'},
+	 //  		node3:{'label':'3'},
+	 //  		node4:{'label':'4'}
+	 //  		},
+	 //  	edges:{
+	 //  		node1:{node2:{}, node3:{}},
+	 //  		node2:{node3:{}, node4:{}}
+	 //  	}
+  // 	}
+
+  var data;
+
+  data = '{';
+  data += '"nodes":{';
+
+  for(var i=0; i<600;i++)
+  {
+ 	data += '"node'+i+'":{"label":"'+i+'"},';
+  }
+  data = data.slice(0, - 1);
+
+  data += '},';
+  data += '"edges":{';
+
+
+  for(var i=0; i<600;i++)
+  {
+  	for(var j=0; j<_ARRAY[i].length; j++)
+  	{
+  		if(_ARRAY[i][j])
+ 		data += '"node'+i+'":{"node'+_ARRAY[i][0]+'":"{}"},';
+ 		// else
+ 		// console.log("empty :"+i);
+  	}
+  	
+  }
+  data = data.slice(0, - 1);
+
+  data += '}';
+  data += '}';
+
+  var json = jQuery.parseJSON(data);
+  sys.graft(json);
+  // console.log(json);
+
+
 }
