@@ -1,19 +1,77 @@
 <html>
     <head>
         <script language="javascript" type="text/javascript"  src="jquery-2.0.3.js"></script>
-        <script language="javascript" type="text/javascript" src="arbor/arbor.js" ></script>
-        <script language="javascript" type="text/javascript" src="arbor/graphics.js" ></script>
-        <script language="javascript" type="text/javascript" src="arbor/renderer.js" ></script>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script language="javascript" type="text/javascript" src="graph.js" ></script>
+        <script language="javascript" type="text/javascript" src="tween.js" ></script>
+        <style>
+        circle.node {
+          stroke: #fff;
+          stroke-width: 1px;
+        }
+
+        line.link {
+          stroke: #999;
+          stroke-opacity: .6;
+        }
+        </style>
+      <script language="javascript" type="text/javascript">
+         $(document).ready(function(){
+
+
+            var Arr = loadFileIntoArray("dat.txt");
+            var Arr2 = new Array(600);
+            for(var i=0; i<Arr2.length; i++)
+              Arr2[i] = new Array();
+
+            for(var i=0; i<Arr.length; i++)
+            {
+              var parent = Arr[i].substr(0, Arr[i].indexOf(" :"));
+              Arr2[i].push(parseInt(parent));
+              var childs = Arr[i].slice(Arr[i].indexOf(" :")+2);
+              Arr2[i].push(childs.split(" , "));
+              var temp1 = Arr2[i][1][0];
+              temp1 = temp1.slice(1);
+              Arr2[i][1][0] = temp1;
+              var len = (Arr2[i][1].length);
+              var temp2 = Arr2[i][1][len-1];
+              temp2 = temp2.substr(0, temp2.indexOf(" ,"));
+              Arr2[i][1][len-1] = temp2;
+
+              for(var k=0; k<Arr2[i][1].length; k++)
+              {
+                var inte = parseInt(Arr2[i][1][k]);
+                Arr2[i][1][k] = inte;
+              }
+            }
+            
+            var json = {
+            "nodes":[],
+            "links":[]
+            };
+
+
+            for(var i=0; i<Arr2.length; i++)
+            {
+              json.nodes.push({"name":i});
+              for(var j=0; j<Arr2[i][1].length; j++)
+              {
+                if(Arr2[i][1][j].toString() != "NaN")
+                {
+                  json.links.push({"source":Arr2[i][0], "target":Arr2[i][1][j]});
+                }
+              }
+             
+            }
+            console.log(json);
+
+
+            init(json);
+         });
+      </script>
     </head>
     <body>
-      <canvas id="viewport" width="1200" height="1200"></canvas>
-      <script language="javascript" type="text/javascript">
-          var sys = arbor.ParticleSystem(0, 400, 1);
-          sys.parameters({gravity:true});
-          sys.renderer = Renderer("#viewport");
-          var animals = sys.addNode('1', {'label':'1'});
-          var animals = sys.addNode('2', {'label':'2'});
-          sys.addEdge(1, 2);
-      </script>
+
+      <div role="main" id="chart">
     </body>
 </html>

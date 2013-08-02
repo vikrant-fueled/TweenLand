@@ -9,19 +9,15 @@ function _initialize(){
 
 	// console.log(_TweenARRAY);
 
-	var _ChildARRAY = new Array();
+	var _EDGES = new Array();
+	_EDGES = _getEDGES(_TweenARRAY);
 
-	var _Result = new Array();
+	_Sort(_EDGES, "size");
+	var MST = _getMST(_EDGES,"prims");
 
-	var _Integers = new Array();
-	_Integers = integerArray(_TweenARRAY.length);
+	// console.log(MST);
 
-	var _Relations = new Array();
-	_Relations = _CompareALL(_TweenARRAY);
-
-	// console.log(_Relations);
-
-	_CreateGRAPH(_Relations);
+	// BFS = _BFS(MST);
 }
 
 
@@ -42,89 +38,118 @@ function _CreateCLONE(_PARENT){
 	return _CLONE;
 }
 
-function _CompareALL(_ARRAY)
+function _getEDGES(_ARRAY)
 {
-	var _RESULT = new Array();
+	var _EDGES = new Array();
 	for(var i=0; i<_ARRAY.length; i++)
 	{
 		var _PartA = new Array();
 		_PartA = _ARRAY[i];
-		_KEYS = new Array();
 		for(var j=0; j<_ARRAY.length; j++)
 		{
+			var _EDGE = new Object();
 			var _PartB = new Array();
 			_PartB = _ARRAY[j];
 
-			_DIFF = Math.round((compareArrays(_PartA, _PartB, false)).length/6);
+			_DIFF = (compareArrays(_PartA, _PartB, false)).length;
 
-
-			if(_DIFF >= 15 && _DIFF <= 25)
+			if(_DIFF/6 >= 15 && _DIFF/6 <= 25)
 			{
-				_KEYS.push(j);
+				_EDGE.size = _DIFF;
+				_EDGE.links = [i,j];
+				_EDGES.push(_EDGE);
 			}
 		}
-		if(i%50 == 0)
-		console.log(i+" Done...");
-		_RESULT.push(_KEYS);
+		// if((i+1)%50 == 0)
+		// console.log((i+1)+" Done...");
 	}
-
-	return _RESULT;
+	return _EDGES;
 }
 
-function _CreateGRAPH(_ARRAY){
+function _Sort(_OBJECT, _PARAMETER)
+{
+	_OBJECT.sort(function (a, b){
+		return (b[_PARAMETER] - a[_PARAMETER]);
+	});
+}
 
-  var sys = arbor.ParticleSystem(800, 0, 1, false, 60, 2, 0);
-  sys.stop();
-  sys.renderer = Renderer("#graph-output");
+function _getMST(_EDGES, _ALGO)
+{
+	var MST = new Array();
+	var GROUPS = new Array();
+	var last = _EDGES.length - 1;
+	var count = 0;
+	var loop = false;
+	// console.log(_EDGES);
 
+	for(var i=last; i>=1190; i--)
+	{
+			console.log(GROUPS);	
+		var TEMP = _EDGES[i];
+		if(count === 0)
+		{
+			GROUPS[0] = copyArray(TEMP.links);
+			MST.push(TEMP);
+			count++;
+		}
+		else
+		{
+			loop = false;
+			// console.log("count="+count);
+			var TEMP2 = copyArray(GROUPS[count-1]);
+			if(TEMP2.indexOf(TEMP.links[0]) > -1 && TEMP2.indexOf(TEMP.links[1]) > -1)
+				loop = true;
 
-  // var data = {
-	 //  	nodes:{
-	 //  		node1:{'label':'1'},
-	 //  		node2:{'label':'2'},
-	 //  		node3:{'label':'3'},
-	 //  		node4:{'label':'4'}
-	 //  		},
-	 //  	edges:{
-	 //  		node1:{node2:{}, node3:{}},
-	 //  		node2:{node3:{}, node4:{}}
-	 //  	}
-  // 	}
+			
+			if(!loop)
+			{
+				MST.push(TEMP);
+				// TEMP2.push(TEMP.links[0], TEMP.links[1]);
+				GROUPS.push([TEMP.links[0],TEMP.links[1]]);
+				count++;
+			}
+			// else
+				// console.log("loop found");
+		}
+	}
+	// console.log(MST);
 
-  var data;
+	// var MSTArray = new Array(600);
+	// for(var i=0; i<MSTArray.length; i++)
+	// 	MSTArray[i] = new Array(600);
 
-  data = '{';
-  data += '"nodes":{';
+	// for(var i=0; i<MST.length; i++)
+	// {
+	// 	MSTArray[MST[i].links[0]][MST[i].links[1]] = MST[i].size;
+	// 	MSTArray[MST[i].links[1]][MST[i].links[0]] = MST[i].size;
+	// }
 
-  for(var i=0; i<600;i++)
-  {
- 	data += '"node'+i+'":{"label":"'+i+'"},';
-  }
-  data = data.slice(0, - 1);
+	// return MSTArray;
+}
 
-  data += '},';
-  data += '"edges":{';
+function _BFS(MSTArray, StartNODE){
+	if(!StartNODE)
+		var StartNODE = 0;
 
+	var Q = new Array();
 
-  for(var i=0; i<600;i++)
-  {
-  	for(var j=0; j<_ARRAY[i].length; j++)
-  	{
-  		if(_ARRAY[i][j])
- 		data += '"node'+i+'":{"node'+_ARRAY[i][0]+'":"{}"},';
- 		// else
- 		// console.log("empty :"+i);
-  	}
-  	
-  }
-  data = data.slice(0, - 1);
+	Q.push(StartNODE);
+	var qpos = 0;
+	var links = new Array();
 
-  data += '}';
-  data += '}';
-
-  var json = jQuery.parseJSON(data);
-  sys.graft(json);
-  // console.log(json);
-
-
+	while(qpos<Q.length)
+	{
+		for(var i=0; i<600; i++)
+		{
+			if(MSTArray[Q[qpos]][i])
+			{
+				if(Q.indexOf(i) == -1)
+				Q.push(i);
+			}
+		}
+	qpos++;
+	}
+	console.log(Q.length);
+	console.log(qpos);
+	console.log(Q);
 }

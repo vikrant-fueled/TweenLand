@@ -1,9 +1,9 @@
 // returns a copy of array source
 function copyArray(source) {
-	var copy = new Array();
 	var len = source.length;
+	var copy = new Array(len);
 	for (var i = 0; i < len; i++) {
-		copy[copy.length] = source[i];
+		copy[i] = source[i];
 	}
 	return copy;
 }
